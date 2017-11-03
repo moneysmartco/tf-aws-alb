@@ -7,7 +7,7 @@ Example
 ```
 # Set default listener arn
 module "alb" {
-  source  = "git@github.com:moneysmartco/terraform-aws.git//alb"
+  source  = "git@github.com:moneysmartco/tf-aws-alb.git?ref=master"
   env     = "${var.env}"
   vpc_id  = "${var.vpc_id}"
   public_subnet_ids     = "${var.public_subnet_ids}"
@@ -20,7 +20,7 @@ module "alb" {
 
 # If you only want to create the ALB without the default listener
 module "alb" {
-  source  = "git@github.com:moneysmartco/terraform-aws.git//alb"
+  source  = "git@github.com:moneysmartco/tf-aws-alb.git?ref=master"
   env     = "${var.env}"
   vpc_id  = "${var.vpc_id}"
   public_subnet_ids     = "${var.public_subnet_ids}"
