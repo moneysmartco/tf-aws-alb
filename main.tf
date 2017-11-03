@@ -63,26 +63,26 @@ resource "aws_alb" "alb_name" {
 
 
 #-------------------------
-# HTTP Listener Default, Given alb_listener_default_http_arn
+# HTTP Listener Default
 #-------------------------
 resource "aws_alb_listener" "alb_listener_http" {
-  count = "${var.alb_listenter_default_http_arn == "" ? 0 : 1}"
+  count = "${var.alb_listener_http_count ? 1 : 0}"
   load_balancer_arn = "${aws_alb.alb_name.arn}"
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = "${var.alb_listenter_default_http_arn}"
+    target_group_arn = "${var.alb_listener_default_http_arn}"
     type             = "forward"
   }
 }
 
 
 #-------------------------
-# HTTPS Listener Default, Given alb_listener_default_http_arn
+# HTTPS Listener Default
 #-------------------------
 resource "aws_alb_listener" "alb_listener_https" {
-  count = "${var.alb_listenter_default_https_arn == "" ? 0 : 1}"
+  count = "${var.alb_listener_https_count ? 1 : 0}"
   load_balancer_arn = "${aws_alb.alb_name.arn}"
   port              = "443"
   protocol          = "HTTPS"
@@ -90,17 +90,17 @@ resource "aws_alb_listener" "alb_listener_https" {
   certificate_arn   = "${var.alb_ssl_cert_arn}"
 
   default_action {
-    target_group_arn = "${var.alb_listenter_default_https_arn}"
+    target_group_arn = "${var.alb_listener_default_https_arn}"
     type             = "forward"
   }
 }
 
 
-#-------------------------
-# HTTP ALB Target Group when without default http_arn
-#-------------------------
+#--------------------------------------------------
+# HTTP ALB Target Group without default http_arn
+#--------------------------------------------------
 resource "aws_alb_target_group" "default_http" {
-  count = "${var.alb_listenter_default_http_arn == "" ? 1 : 0}"
+  count = "${var.alb_listener_http_count ? 0 : 1}"
   name = "alb-default-${var.env}-${var.project_name}"
   port = "80"
   protocol = "HTTP"
@@ -112,11 +112,11 @@ resource "aws_alb_target_group" "default_http" {
 }
 
 
-#-------------------------
-# HTTP Listener Default, without default http_arn
-#-------------------------
+#--------------------------------------------------
+# HTTP Listener Default without default http_arn
+#--------------------------------------------------
 resource "aws_alb_listener" "alb_listener_http_empty_target_group" {
-  count = "${var.alb_listenter_default_http_arn == "" ? 1 : 0}"
+  count = "${var.alb_listener_http_count ? 0 : 1}"
   load_balancer_arn = "${aws_alb.alb_name.arn}"
   port              = "80"
   protocol          = "HTTP"
@@ -128,11 +128,11 @@ resource "aws_alb_listener" "alb_listener_http_empty_target_group" {
 }
 
 
-#-------------------------
-# HTTPS ALB Target Group when without default https_arn
-#-------------------------
+#--------------------------------------------------
+# HTTPS ALB Target Group without default https_arn
+#--------------------------------------------------
 resource "aws_alb_target_group" "default_https" {
-  count = "${var.alb_listenter_default_https_arn == "" ? 1 : 0}"
+  count = "${var.alb_listener_https_count ? 0 : 1}"
   name = "alb-default-${var.env}-${var.project_name}"
   port = "80"
   protocol = "HTTP"
@@ -144,11 +144,11 @@ resource "aws_alb_target_group" "default_https" {
 }
 
 
-#-------------------------
-# HTTPS Listener Default, without default http_arn
-#-------------------------
+#--------------------------------------------------
+# HTTPS Listener Default without default https_arn
+#--------------------------------------------------
 resource "aws_alb_listener" "alb_listener_https_empty_target_group" {
-  count = "${var.alb_listenter_default_https_arn == "" ? 1 : 0}"
+  count = "${var.alb_listener_https_count ? 0 : 1}"
   load_balancer_arn = "${aws_alb.alb_name.arn}"
   port              = "443"
   protocol          = "HTTPS"
