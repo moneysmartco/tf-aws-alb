@@ -10,6 +10,10 @@ jobs:
     <<: *terraform
     steps:
       - checkout
+
+      - run:
+          name: Add make to Alpine
+          command: apk add --update make
       
       - run:
           name: terraform init
