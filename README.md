@@ -1,5 +1,7 @@
 # Application Load Balancer Module
 
+[![CircleCI](https://circleci.com/gh/moneysmartco/tf-aws-alb.svg?style=svg&circle-token=ca851bec275a8519eaba43d6e0aef4a45e176c5a)](https://circleci.com/gh/moneysmartco/tf-aws-alb)
+
 Update variables following the `variables.tf`
 
 Example
@@ -30,4 +32,12 @@ module "alb" {
   alb_listener_http_count  = false
   alb_listener_https_count = false
 }
+```
+
+## Testing
+
+This requires `tflint` https://github.com/wata727/tflint
+
+```
+make test
 ```
