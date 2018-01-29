@@ -1,0 +1,4 @@
+# The read only IAM was configured inside CircleCI setting
+# E.g https://circleci.com/docs/1.0/continuous-deployment-with-amazon-s3/
+provider "aws" {
+}

@@ -2,26 +2,10 @@
 # Security Group
 #--------------------
 resource "aws_security_group" "alb_sg" {
-  name = "${var.alb_name}-sg"
+  name_prefix = "${var.alb_name}-sg"
   description = "${var.alb_name} ALB SecGroup"
 
   vpc_id = "${var.vpc_id}"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    self        = true
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    self        = true
-  }
 
   egress {
     from_port   = 0
@@ -33,24 +17,72 @@ resource "aws_security_group" "alb_sg" {
   tags {
     Name = "${var.alb_name}-sg"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
+
+resource "aws_security_group_rule" "allow_http_all" {
+  count             = "${length(compact(var.alb_ingress_whitelist_ips)) == 0 ? 1: 0}"
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.alb_sg.id}"
+}
+
+resource "aws_security_group_rule" "allow_http_custom" {
+  count             = "${length(compact(var.alb_ingress_whitelist_ips)) != 0 ? 1: 0}"
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = "${var.alb_ingress_whitelist_ips}"
+  security_group_id = "${aws_security_group.alb_sg.id}"
+}
+
+resource "aws_security_group_rule" "allow_https_all" {
+  count             = "${length(compact(var.alb_ingress_whitelist_ips)) == 0 ? 1: 0}"
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.alb_sg.id}"
+}
+
+resource "aws_security_group_rule" "allow_https_custom" {
+  count             = "${length(compact(var.alb_ingress_whitelist_ips)) != 0 ? 1: 0}"
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = "${var.alb_ingress_whitelist_ips}"
+  security_group_id = "${aws_security_group.alb_sg.id}"
+}
+
 
 
 #--------------------
 # ALB
 #--------------------
-resource "aws_alb" "alb_name" {
+resource "aws_alb" "alb" {
+  # Wait until https://github.com/hashicorp/terraform/pull/16997 is merged
+  # Otherwise alb name_prefix must be shorter than 6 chars
+  # name_prefix     = "${var.alb_name}"
   name            = "${var.alb_name}"
-  internal        = false
   security_groups = ["${aws_security_group.alb_sg.id}"]
   subnets         = ["${split(",", var.public_subnet_ids)}"]
+  internal        = "${var.alb_internal}"
+  enable_deletion_protection = "${var.alb_enable_deletion_protection}"
 
-  enable_deletion_protection = false
-
-  # access_logs {
-  #   bucket = "${aws_s3_bucket.alb_logs.bucket}"
-  #   prefix = "test-alb"
-  # }
+  access_logs {
+    bucket  = "${var.alb_s3_access_log_bucket}"
+    prefix  = "${var.alb_name}"
+    enabled = "${var.alb_s3_access_log_enabled}"
+  }
 
   tags {
     Name        = "${var.alb_name}"
@@ -59,6 +91,10 @@ resource "aws_alb" "alb_name" {
     Type        = "alb"
     Layer       = "alb"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 
@@ -66,7 +102,7 @@ resource "aws_alb" "alb_name" {
 # HTTP Listener Default
 #-------------------------
 resource "aws_alb_listener" "alb_listener_http" {
-  load_balancer_arn = "${aws_alb.alb_name.arn}"
+  load_balancer_arn = "${aws_alb.alb.arn}"
   port              = "80"
   protocol          = "HTTP"
 
@@ -81,7 +117,7 @@ resource "aws_alb_listener" "alb_listener_http" {
 # HTTPS Listener Default
 #-------------------------
 resource "aws_alb_listener" "alb_listener_https" {
-  load_balancer_arn = "${aws_alb.alb_name.arn}"
+  load_balancer_arn = "${aws_alb.alb.arn}"
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2015-05"

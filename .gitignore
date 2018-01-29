@@ -1,3 +1,6 @@
 *.tfvars
 *.tfstate*
 .terraform
+init.tf
+init_ci.tf
+

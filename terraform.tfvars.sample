@@ -1,0 +1,10 @@
+# General
+env = "test"
+vpc_id = "vpc-xxx"
+project_name = "test-proj"
+public_subnet_ids = "id-xxx,id-yyy"
+# ALB
+alb_name = "alb-test"
+alb_ssl_cert_arn = "arn:xxx"
+alb_listener_http_count = false
+alb_listener_https_count = false

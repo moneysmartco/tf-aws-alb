@@ -1,5 +1,5 @@
 output "alb_arn" {
-  value = "${aws_alb.alb_name.arn}"
+  value = "${aws_alb.alb.arn}"
 }
 
 output "alb_sg_id" {
@@ -15,5 +15,5 @@ output "alb_listener_https_arn" {
 }
 
 output "alb_url" {
-  value = "${aws_alb.alb_name.dns_name}"
+  value = "${aws_alb.alb.dns_name}"
 }
