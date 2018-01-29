@@ -2,26 +2,10 @@
 # Security Group
 #--------------------
 resource "aws_security_group" "alb_sg" {
-  name = "${var.alb_name}-sg"
+  name_prefix = "${var.alb_name}-sg"
   description = "${var.alb_name} ALB SecGroup"
 
   vpc_id = "${var.vpc_id}"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    self        = true
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    self        = true
-  }
 
   egress {
     from_port   = 0
@@ -33,24 +17,73 @@ resource "aws_security_group" "alb_sg" {
   tags {
     Name = "${var.alb_name}-sg"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
+
+resource "aws_security_group_rule" "allow_http_all" {
+  count             = "${length(compact(var.alb_ingress_whitelist_ips)) == 0 ? 1: 0}"
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  self              = true
+  security_group_id = "${aws_security_group.alb_sg.id}"
+}
+
+resource "aws_security_group_rule" "allow_http_custom" {
+  count             = "${length(compact(var.alb_ingress_whitelist_ips)) != 0 ? 1: 0}"
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = "${var.alb_ingress_whitelist_ips}"
+  self              = true
+  security_group_id = "${aws_security_group.alb_sg.id}"
+}
+
+esource "aws_security_group_rule" "allow_http_all" {
+  count             = "${length(compact(var.alb_ingress_whitelist_ips)) == 0 ? 1: 0}"
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  self              = true
+  security_group_id = "${aws_security_group.alb_sg.id}"
+}
+
+resource "aws_security_group_rule" "allow_http_custom" {
+  count             = "${length(compact(var.alb_ingress_whitelist_ips)) != 0 ? 1: 0}"
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = "${var.alb_ingress_whitelist_ips}"
+  self              = true
+  security_group_id = "${aws_security_group.alb_sg.id}"
+}
+
 
 
 #--------------------
 # ALB
 #--------------------
 resource "aws_alb" "alb_name" {
-  name            = "${var.alb_name}"
-  internal        = false
+  name_prefix     = "${var.alb_name}"
   security_groups = ["${aws_security_group.alb_sg.id}"]
   subnets         = ["${split(",", var.public_subnet_ids)}"]
+  internal        = "${var.alb_internal}"
+  enable_deletion_protection = "${var.alb_enable_deletion_protection}"
 
-  enable_deletion_protection = false
-
-  # access_logs {
-  #   bucket = "${aws_s3_bucket.alb_logs.bucket}"
-  #   prefix = "test-alb"
-  # }
+  access_logs {
+    bucket  = "${var.alb_s3_access_log_bucket}"
+    prefix  = "${var.alb_name}"
+    enabled = "${var.alb_s3_access_log_enabled}"
+  }
 
   tags {
     Name        = "${var.alb_name}"
@@ -58,6 +91,10 @@ resource "aws_alb" "alb_name" {
     Environment = "${var.env}"
     Type        = "alb"
     Layer       = "alb"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
