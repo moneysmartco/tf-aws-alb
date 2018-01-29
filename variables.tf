@@ -28,7 +28,7 @@ variable "alb_s3_access_log_bucket" {
   description = "S3 bucket name to store ALB access logs"
   default = ""
 }
-variable "alb_s3_access_log_bucket_enabled" {
+variable "alb_s3_access_log_enabled" {
   description = "Boolean to enable / disable ALB access logs"
   default = false
 }
