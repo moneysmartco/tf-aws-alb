@@ -134,7 +134,6 @@ resource "aws_alb_listener" "alb_listener_https" {
 # HTTP ALB Target Group without default http_arn
 #--------------------------------------------------
 resource "aws_alb_target_group" "default_http" {
-  count = "${var.alb_listener_http_count ? 0 : 1}"
   name = "alb-default-${var.env}-${var.project_name}"
   port = "80"
   protocol = "HTTP"
@@ -149,7 +148,6 @@ resource "aws_alb_target_group" "default_http" {
 # HTTPS ALB Target Group without default https_arn
 #--------------------------------------------------
 resource "aws_alb_target_group" "default_https" {
-  count = "${var.alb_listener_https_count ? 0 : 1}"
   name = "alb-default-${var.env}-${var.project_name}"
   port = "80"
   protocol = "HTTP"
