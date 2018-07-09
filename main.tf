@@ -2,7 +2,7 @@
 # Security Group
 #--------------------
 resource "aws_security_group" "alb_sg" {
-  name_prefix = "${var.alb_name}-sg"
+  name_prefix = "tf-${var.alb_name}-sg"
   description = "${var.alb_name} ALB SecGroup"
 
   vpc_id = "${var.vpc_id}"
