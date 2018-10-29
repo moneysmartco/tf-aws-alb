@@ -23,6 +23,7 @@ jobs:
 
       - run: cp terraform.tfvars.sample terraform.tfvars
       - run: cp init_ci.tf.sample init_ci.tf
+      - run: terraform init
       - run: terraform plan
 
       - persist_to_workspace:
