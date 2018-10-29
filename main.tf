@@ -64,7 +64,6 @@ resource "aws_security_group_rule" "allow_https_custom" {
 }
 
 
-
 #--------------------
 # ALB
 #--------------------
@@ -107,8 +106,12 @@ resource "aws_alb_listener" "alb_listener_http" {
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = "${var.alb_listener_http_count ? var.alb_listener_default_http_arn : aws_alb_target_group.default_http.arn}"
-    type             = "forward"
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 
