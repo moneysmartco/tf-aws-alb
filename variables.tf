@@ -31,7 +31,7 @@ variable "alb_s3_access_log_enabled" {
   default = false
 }
 variable "alb_ingress_whitelist_ips" {
-  description = ""
-  type = "list"
-  default = []
+  description = "List of IPs that ALB allows to connect to. Use comma to separate multiple IPs"
+  type = "string"
+  default = ""
 }
