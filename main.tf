@@ -134,20 +134,6 @@ resource "aws_alb_listener" "alb_listener_https" {
 
 
 #--------------------------------------------------
-# HTTP ALB Target Group without default http_arn
-#--------------------------------------------------
-resource "aws_alb_target_group" "default_http" {
-  name = "alb-default-${var.env}-${var.project_name}"
-  port = "80"
-  protocol = "HTTP"
-  vpc_id = "${var.vpc_id}"
-
-  health_check {
-    path = "/"
-  }
-}
-
-#--------------------------------------------------
 # HTTPS ALB Target Group without default https_arn
 #--------------------------------------------------
 resource "aws_alb_target_group" "default_https" {
