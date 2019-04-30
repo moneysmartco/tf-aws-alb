@@ -33,3 +33,19 @@ variable "alb_ingress_whitelist_ips" {
   type = "string"
   default = ""
 }
+
+variable "tags" {
+  description = "Tagging resources with default values"
+  default = {
+    "Name" = ""
+    "Country" = ""
+    "Environment" = ""
+    "Repository" = ""
+    "Owner" = ""
+    "Department" = ""
+    "Team" = "shared"
+    "Product" = "common"
+    "Project" = "common"
+    "Stack" = ""
+  }
+}
