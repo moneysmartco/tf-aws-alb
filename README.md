@@ -17,7 +17,6 @@ module "alb" {
   alb_name              = "${var.alb_name}"
   #alb_internal          = true # -> set internal ALB
   alb_ssl_cert_arn      = "${var.alb_ssl_cert_arn}"
-  alb_listener_default_http_arn  = "${var.a_target_arn}"
   alb_listener_default_https_arn = "${var.a_target_arn}"
 }
 
@@ -30,7 +29,6 @@ module "alb" {
   project_name          = "${var.project_name}"
   alb_name              = "${var.alb_name}"
   alb_ssl_cert_arn      = "${var.alb_ssl_cert_arn}"
-  alb_listener_http_count  = false
   alb_listener_https_count = false
 }
 ```
