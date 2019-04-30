@@ -1,3 +1,25 @@
+locals{
+  # env tag in map structure
+  env_tag = { Environment = "${var.env}" }
+
+  # alb  name tag in map structure
+  alb_name_tag = { Name = "${var.alb_name}" }
+
+  # alb security group name tag in map structure
+  alb_security_group_name_tag = { Name = "${var.alb_name}-sg" }
+
+  #------------------------------------------------------------
+  # variables that will be mapped to the various resource block
+  #------------------------------------------------------------
+
+  # alb tags
+  alb_tags = "${merge(var.tags, local.env_tag, local.alb_name_tag)}"
+
+  # app ec2 security group tags
+  alb_security_group_tags = "${merge(var.tags, local.env_tag, local.alb_security_group_name_tag)}"
+}
+
+
 #--------------------
 # Security Group
 #--------------------
@@ -14,9 +36,7 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
-    Name = "${var.alb_name}-sg"
-  }
+  tags = "${local.alb_security_group_tags}"
 
   lifecycle {
     create_before_destroy = true
@@ -71,6 +91,7 @@ resource "aws_alb" "alb" {
   # Wait until https://github.com/hashicorp/terraform/pull/16997 is merged
   # Otherwise alb name_prefix must be shorter than 6 chars
   # name_prefix     = "${var.alb_name}"
+  # name is parsed with env embedded from vault, would require decoupling in future
   name            = "${var.alb_name}"
   security_groups = ["${aws_security_group.alb_sg.id}"]
   subnets         = ["${split(",", var.public_subnet_ids)}"]
@@ -83,13 +104,7 @@ resource "aws_alb" "alb" {
     enabled = "${var.alb_s3_access_log_enabled}"
   }
 
-  tags {
-    Name        = "${var.alb_name}"
-    Project     = "${var.project_name}"
-    Environment = "${var.env}"
-    Type        = "alb"
-    Layer       = "alb"
-  }
+  tags = "${local.alb_tags}" 
 
   lifecycle {
     create_before_destroy = true
