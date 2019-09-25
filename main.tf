@@ -63,6 +63,16 @@ resource "aws_security_group_rule" "allow_http_custom" {
   security_group_id = "${aws_security_group.alb_sg.id}"
 }
 
+resource "aws_security_group_rule" "allow_http_source_security_group" {
+  count                     = "${length(compact(split(",", var.alb_ingress_source_security_group_ids))) != 0 ? 1: 0}"
+  type                      = "ingress"
+  from_port                 = 80
+  to_port                   = 80
+  protocol                  = "tcp"
+  source_security_group_id  = "${split(",", var.alb_ingress_source_security_group_ids)}"
+  security_group_id         = "${aws_security_group.alb_sg.id}"
+}
+
 resource "aws_security_group_rule" "allow_https_all" {
   count             = "${length(compact(split(",", var.alb_ingress_whitelist_ips))) == 0 ? 1: 0}"
   type              = "ingress"
@@ -81,6 +91,16 @@ resource "aws_security_group_rule" "allow_https_custom" {
   protocol          = "tcp"
   cidr_blocks       = "${split(",", var.alb_ingress_whitelist_ips)}"
   security_group_id = "${aws_security_group.alb_sg.id}"
+}
+
+resource "aws_security_group_rule" "allow_https_source_security_group" {
+  count                     = "${length(compact(split(",", var.alb_ingress_source_security_group_ids))) != 0 ? 1: 0}"
+  type                      = "ingress"
+  from_port                 = 443
+  to_port                   = 443
+  protocol                  = "tcp"
+  source_security_group_id  = "${split(",", var.alb_ingress_source_security_group_ids)}"
+  security_group_id         = "${aws_security_group.alb_sg.id}"
 }
 
 
