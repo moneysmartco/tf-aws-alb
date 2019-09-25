@@ -44,7 +44,7 @@ resource "aws_security_group" "alb_sg" {
 }
 
 resource "aws_security_group_rule" "allow_http_all" {
-  count             = "${length(compact(split(",", var.alb_ingress_whitelist_ips))) == 0 ? 1: 0}"
+  count             = "${length(compact(split(",", var.alb_ingress_whitelist_ips))) == 0 && length(var.alb_ingress_source_security_group_ids) == 0 ? 1: 0}"
   type              = "ingress"
   from_port         = 80
   to_port           = 80
@@ -74,7 +74,7 @@ resource "aws_security_group_rule" "allow_http_source_security_group" {
 }
 
 resource "aws_security_group_rule" "allow_https_all" {
-  count             = "${length(compact(split(",", var.alb_ingress_whitelist_ips))) == 0 ? 1: 0}"
+  count             = "${length(compact(split(",", var.alb_ingress_whitelist_ips))) == 0 && length(var.alb_ingress_source_security_group_ids) == 0 ? 1: 0}"
   type              = "ingress"
   from_port         = 443
   to_port           = 443
@@ -157,7 +157,7 @@ resource "aws_alb_listener" "alb_listener_https" {
   load_balancer_arn = "${aws_alb.alb.arn}"
   port              = "443"
   protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2015-05"
+  ssl_policy        = "${var.alb_listener_ssl_policy}"
   certificate_arn   = "${var.alb_ssl_cert_arn}"
 
   default_action {

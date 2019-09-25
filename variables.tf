@@ -20,6 +20,11 @@ variable "alb_listener_default_https_arn"     {
   default     = ""
 }
 
+variable "alb_listener_ssl_policy" {
+  description = "Default ssl policy for HTTPS listener"
+  default     = "ELBSecurityPolicy-2015-05"
+}
+
 variable "alb_internal" {
   description = "Set LB to be private or public"
   default = false
