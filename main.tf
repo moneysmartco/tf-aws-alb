@@ -99,10 +99,9 @@ resource "aws_security_group_rule" "allow_https_source_security_group" {
   from_port                 = 443
   to_port                   = 443
   protocol                  = "tcp"
-  source_security_group_id  = "${split(",", var.alb_ingress_source_security_group_ids)}"
+  source_security_group_id = "${element(var.alb_ingress_source_security_group_ids, count.index)}"
   security_group_id         = "${aws_security_group.alb_sg.id}"
 }
-
 
 #--------------------
 # ALB
