@@ -48,8 +48,8 @@ variable "alb_ingress_whitelist_ips" {
 
 variable "alb_ingress_source_security_group_ids" {
   description = "List of source Security Group IDs that ALB allows to connect to. Use comma to separate multiple Ids"
-  type = "string"
-  default = ""
+  type = "list"
+  default = []
 }
 
 variable "tags" {
