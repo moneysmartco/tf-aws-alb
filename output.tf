@@ -20,3 +20,7 @@ output "alb_listener_https_arn" {
 output "alb_url" {
   value = "${aws_alb.alb.dns_name}"
 }
+
+output "alb_security_group" {
+  value = "${aws_security_group.alb_sg.id}"
+}
