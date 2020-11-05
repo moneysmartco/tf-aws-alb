@@ -21,6 +21,6 @@ output "alb_url" {
   value = "${aws_alb.alb.dns_name}"
 }
 
-output "alb_security_group" {
+output "alb_security_group_id" {
   value = "${aws_security_group.alb_sg.id}"
 }
