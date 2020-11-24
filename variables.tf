@@ -32,7 +32,7 @@ variable "alb_internal" {
 
 variable "alb_enable_deletion_protection" {
   description = "If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer"
-  default = false
+  default = true
 }
 
 variable "alb_s3_access_log_bucket" {
