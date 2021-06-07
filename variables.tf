@@ -28,7 +28,7 @@ variable "alb_listener_default_https_arn" {
 
 variable "alb_listener_ssl_policy" {
   description = "Default ssl policy for HTTPS listener"
-  default     = "ELBSecurityPolicy-2015-05"
+  default     = "ELBSecurityPolicy-2016-08"
 }
 
 variable "alb_internal" {
